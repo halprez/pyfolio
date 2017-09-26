@@ -432,9 +432,22 @@ def compute_volume_exposures(shares_held, volumes, percentile):
     shorted_frac = shares_shorted.divide(volumes)
     grossed_frac = shares_grossed.divide(volumes)
 
-    longed_threshold = 100*longed_frac.quantile(percentile, axis='columns')
-    shorted_threshold = 100*shorted_frac.quantile(percentile, axis='columns')
-    grossed_threshold = 100*grossed_frac.quantile(percentile, axis='columns')
+    # NOTE: To work around a bug with nan-handling in pandas 0.18,
+    #       drop all-nan rows before the call to `quantile`, and then
+    #       restore them by reindexing the final result. This is fixed
+    #       in pandas 0.19.
+    longed_threshold = 100*longed_frac.dropna(how='all').quantile(
+        percentile,
+        axis='columns',
+    ).reindex_like(longed_frac)
+    shorted_threshold = 100*shorted_frac.dropna(how='all').quantile(
+        percentile,
+        axis='columns',
+    ).reindex_like(shorted_frac)
+    grossed_threshold = 100*grossed_frac.dropna(how='all').quantile(
+        percentile,
+        axis='columns',
+    ).reindex_like(grossed_frac)
 
     return longed_threshold, shorted_threshold, grossed_threshold
 

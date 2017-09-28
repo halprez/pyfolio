@@ -436,15 +436,15 @@ def compute_volume_exposures(shares_held, volumes, percentile):
     #       drop all-nan rows before the call to `quantile`, and then
     #       restore them by reindexing the final result. This is fixed
     #       in pandas 0.19.
-    longed_threshold = 100*longed_frac.dropna(how='all').quantile(
+    longed_threshold = 100 * longed_frac.dropna(how='all').quantile(
         percentile,
         axis='columns',
     ).reindex_like(longed_frac)
-    shorted_threshold = 100*shorted_frac.dropna(how='all').quantile(
+    shorted_threshold = 100 * shorted_frac.dropna(how='all').quantile(
         percentile,
         axis='columns',
     ).reindex_like(shorted_frac)
-    grossed_threshold = 100*grossed_frac.dropna(how='all').quantile(
+    grossed_threshold = 100 * grossed_frac.dropna(how='all').quantile(
         percentile,
         axis='columns',
     ).reindex_like(grossed_frac)
@@ -478,7 +478,7 @@ def plot_volume_exposures_longshort(longed_threshold, shorted_threshold,
     ax.axhline(0, color='k')
     ax.set(title='Long and short exposures to illiquidity',
            ylabel='{}th percentile of proportion of volume (%)'
-           .format(100*percentile))
+           .format(100 * percentile))
     ax.legend(frameon=True, framealpha=0.5)
 
     return ax
@@ -507,7 +507,7 @@ def plot_volume_exposures_gross(grossed_threshold, percentile, ax=None):
     ax.axhline(0, color='k')
     ax.set(title='Gross exposure to illiquidity',
            ylabel='{}th percentile of \n proportion of volume (%)'
-           .format(100*percentile))
+           .format(100 * percentile))
     ax.legend(frameon=True, framealpha=0.5)
 
     return ax

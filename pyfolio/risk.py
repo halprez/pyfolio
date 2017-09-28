@@ -12,9 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import numpy as np
-import matplotlib.pyplot as plt
 from collections import OrderedDict
+from functools import partial
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 SECTORS = OrderedDict([
     (101, 'Basic Materials'),
@@ -432,22 +435,26 @@ def compute_volume_exposures(shares_held, volumes, percentile):
     shorted_frac = shares_shorted.divide(volumes)
     grossed_frac = shares_grossed.divide(volumes)
 
-    # NOTE: To work around a bug with nan-handling in pandas 0.18,
-    #       drop all-nan rows before the call to `quantile`, and then
-    #       restore them by reindexing the final result. This is fixed
-    #       in pandas 0.19.
-    longed_threshold = 100 * longed_frac.dropna(how='all').quantile(
-        percentile,
+    # NOTE: To work around a bug in `quantile` with nan-handling in
+    #       pandas 0.18, use np.nanpercentile by applying to each row of
+    #       the dataframe. This is fixed in pandas 0.19.
+    #
+    # longed_threshold = 100*longed_frac.quantile(percentile, axis='columns')
+    # shorted_threshold = 100*shorted_frac.quantile(percentile, axis='columns')
+    # grossed_threshold = 100*grossed_frac.quantile(percentile, axis='columns')
+
+    longed_threshold = 100 * longed_frac.apply(
+        partial(np.nanpercentile, q=100 * percentile),
         axis='columns',
-    ).reindex_like(longed_frac)
-    shorted_threshold = 100 * shorted_frac.dropna(how='all').quantile(
-        percentile,
+    )
+    shorted_threshold = 100 * shorted_frac.apply(
+        partial(np.nanpercentile, q=100 * percentile),
         axis='columns',
-    ).reindex_like(shorted_frac)
-    grossed_threshold = 100 * grossed_frac.dropna(how='all').quantile(
-        percentile,
+    )
+    grossed_threshold = 100 * grossed_frac.apply(
+        partial(np.nanpercentile, q=100 * percentile),
         axis='columns',
-    ).reindex_like(grossed_frac)
+    )
 
     return longed_threshold, shorted_threshold, grossed_threshold
 

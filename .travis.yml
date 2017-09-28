@@ -1,26 +1,15 @@
 language: python
 sudo: false
 
-matrix:
-  include:
-    - python: 2.7
-      env: PANDAS_VERSION=0.18.1
-    - python: 2.7
-      env: PANDAS_VERSION=0.19.2
-    - python: 2.7
-      env: PANDAS_VERSION=0.20.3
-    - python: 3.5
-      env: PANDAS_VERSION=0.18.1
-    - python: 3.5
-      env: PANDAS_VERSION=0.19.2
-    - python: 3.5
-      env: PANDAS_VERSION=0.20.3
-    - python: 3.6
-      env: PANDAS_VERSION=0.18.1
-    - python: 3.6
-      env: PANDAS_VERSION=0.19.2
-    - python: 3.6
-      env: PANDAS_VERSION=0.20.3
+python: 
+  - 2.7
+  - 3.5
+  - 3.6
+
+env:
+  - PANDAS_VERSION=0.18.1
+  - PANDAS_VERSION=0.19.2
+  - PANDAS_VERSION=0.20.3
 
 before_install:
   # We do this conditionally because it saves us some downloading if the
